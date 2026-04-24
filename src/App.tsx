@@ -4,7 +4,8 @@ import {
   useTransform, 
   useSpring, 
   AnimatePresence,
-  useMotionValue
+  useMotionValue,
+  useInView
 } from "motion/react";
 import { 
   ArrowUpRight, 
@@ -21,7 +22,12 @@ import {
   Terminal,
   Cpu,
   Globe,
-  Database
+  Database,
+  Rocket,
+  BookOpen,
+  Briefcase,
+  TrendingUp,
+  Target
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 
@@ -58,22 +64,59 @@ const PROJECTS = [
 
 const CAREER = [
   {
-    year: "2022 — Present",
-    role: "Senior Full Stack Engineer",
-    company: "Global Tech Solutions",
-    details: "Architecting scalable cloud infrastructures and leading a high-performance engineering team."
+    id: "01",
+    phase: "AWAL PERJALANAN",
+    label: "START",
+    year: "2019",
+    role: "Menginjakkan Kaki di Dunia Digital",
+    details: "Memulai perjalanan dengan rasa ingin tahu dan semangat untuk terus belajar hal baru.",
+    icon: Rocket,
+    color: "#5562ff",
+    glowColor: "rgba(85,98,255,0.4)"
   },
   {
-    year: "2020 — 2022",
-    role: "Lead Frontend Developer",
-    company: "Creative Digital Agency",
-    details: "Built immersive 3D web experiences using WebGL and advanced React patterns."
+    id: "02",
+    phase: "BELAJAR & EKSPLORASI",
+    label: "TAHAP 2",
+    year: "2019 — 2020",
+    role: "Membangun Fondasi yang Kuat",
+    details: "Fokus pada pembelajaran, eksplorasi berbagai bidang, dan membangun fondasi yang kuat.",
+    icon: BookOpen,
+    color: "#a855f7",
+    glowColor: "rgba(168,85,247,0.4)"
   },
   {
-    year: "2018 — 2020",
-    role: "Software Developer",
-    company: "Innovation Hub",
-    details: "Full stack contribution to various MVPs, focusing on rapid prototyping and user testing."
+    id: "03",
+    phase: "PENGALAMAN & KONTRIBUSI",
+    label: "TAHAP 3",
+    year: "2021 — 2022",
+    role: "Terjun ke Proyek Nyata",
+    details: "Mulai terlibat dalam proyek nyata, berkontribusi dalam tim, dan memberikan solusi yang berdampak.",
+    icon: Briefcase,
+    color: "#06b6d4",
+    glowColor: "rgba(6,182,212,0.4)"
+  },
+  {
+    id: "04",
+    phase: "BERTUMBUH & MEMIMPIN",
+    label: "TAHAP 4",
+    year: "2023 — 2024",
+    role: "Mengambil Tanggung Jawab Lebih",
+    details: "Mengembangkan skill lebih dalam, menangani tanggung jawab lebih besar, dan mulai memimpin.",
+    icon: TrendingUp,
+    color: "#f59e0b",
+    glowColor: "rgba(245,158,11,0.4)"
+  },
+  {
+    id: "05",
+    phase: "BERDAMPAK & BERKEMBANG",
+    label: "SEKARANG",
+    year: "2025",
+    role: "Memberikan Dampak Nyata",
+    details: "Fokus pada memberikan dampak yang lebih luas dan terus belajar tanpa henti menuju versi terbaik.",
+    icon: Target,
+    color: "#ec4899",
+    glowColor: "rgba(236,72,153,0.4)"
   }
 ];
 
@@ -179,25 +222,204 @@ function ServiceCard({ service }: { service: any, key?: React.Key }) {
   );
 }
 
-function TimelineItem({ item, index }: { item: any, index: number, key?: React.Key }) {
+// ── Winding Road Career Journey ──────────────────────────────────────────────
+
+function CareerCard({ item, index }: { item: any; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const Icon = item.icon;
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-20 py-16 border-t border-white/5 first:border-t-0"
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -4, transition: { duration: 0.3 } }}
+      className="career-card"
+      style={{ "--card-glow": item.glowColor } as React.CSSProperties}
     >
-      <div className="md:col-span-3">
-        <span className="text-[10px] font-bold tracking-[0.4em] text-white/30 uppercase">{item.year}</span>
+      {/* Top: phase label + number */}
+      <div className="career-card__top">
+        <p className="career-card__phase" style={{ color: item.color }}>{item.phase}</p>
+        <span className="career-card__number" style={{ color: item.color }}>{item.id}</span>
       </div>
-      <div className="md:col-span-5">
-        <h4 className="text-3xl font-light uppercase tracking-tighter mb-2">{item.role}</h4>
-        <p className="text-white/40 uppercase tracking-widest text-[10px]">{item.company}</p>
+
+      {/* Icon */}
+      <div className="career-card__icon"
+        style={{ background: `${item.color}15`, borderColor: `${item.color}35` }}>
+        <Icon size={20} style={{ color: item.color }} />
       </div>
-      <div className="md:col-span-4">
-        <p className="text-sm text-white/50 leading-relaxed font-light">{item.details}</p>
-      </div>
+
+      {/* Title - role name (same as phase but displayed as big heading) */}
+      <h4 className="career-card__title">{item.role}</h4>
+
+      {/* Description */}
+      <p className="career-card__desc">{item.details}</p>
+
+      <div className="career-card__glow" />
     </motion.div>
+  );
+}
+
+function WindingRoadCareer() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 0.9", "end 0.1"],
+  });
+  const pathProgress = useSpring(scrollYProgress, { stiffness: 45, damping: 16 });
+
+  const mPath = `M 40 20 C 68 130, 12 230, 40 340 C 68 450, 12 550, 40 660 C 68 770, 12 870, 40 960 C 64 995, 20 1000, 40 1000`;
+  const dPath = `M 80 20 C 136 140, 24 260, 80 380 C 136 500, 24 620, 80 740 C 136 850, 30 940, 80 980`;
+  const mDots = [20, 255, 490, 725, 980];
+  const dDots = [20, 260, 500, 740, 975];
+
+  return (
+    <div ref={containerRef} className="career-road">
+      <div className="career-road__bg" />
+
+      {/* MOBILE */}
+      <div className="cr-mobile">
+        <div className="cr-spine-col" aria-hidden="true">
+          <svg viewBox="0 0 80 1000" preserveAspectRatio="xMidYMid meet"
+            style={{ width: "100%", height: "100%", display: "block" }}>
+            <defs>
+              <linearGradient id="mg" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%"   stopColor="#5562ff" stopOpacity="0.85"/>
+                <stop offset="25%"  stopColor="#a855f7" stopOpacity="0.85"/>
+                <stop offset="50%"  stopColor="#06b6d4" stopOpacity="0.85"/>
+                <stop offset="75%"  stopColor="#f59e0b" stopOpacity="0.85"/>
+                <stop offset="100%" stopColor="#ec4899" stopOpacity="0.95"/>
+              </linearGradient>
+              <filter id="glowM">
+                <feGaussianBlur stdDeviation="2.5" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <mask id="mm">
+                <motion.path d={mPath} stroke="white" strokeWidth="3" fill="none"
+                  strokeLinecap="round" pathLength="1"
+                  style={{ pathLength: pathProgress }}/>
+              </mask>
+            </defs>
+            <path d={mPath} stroke="rgba(255,255,255,0.05)" strokeWidth="22" fill="none" strokeLinecap="round"/>
+            <path d={mPath} stroke="rgba(255,255,255,0.09)" strokeWidth="10" fill="none" strokeLinecap="round"/>
+            <path d={mPath} stroke="url(#mg)" strokeWidth="3" fill="none"
+              strokeLinecap="round" filter="url(#glowM)" mask="url(#mm)"/>
+            <path d={mPath} stroke="rgba(255,255,255,0.10)" strokeWidth="1"
+              strokeDasharray="7 13" fill="none" strokeLinecap="round"/>
+            {CAREER.map((item, i) => (
+              <circle key={item.id} cx="40" cy={mDots[i]} r="5.5"
+                fill={item.color} filter="url(#glowM)"/>
+            ))}
+          </svg>
+        </div>
+
+        <div className="cr-cards-col">
+          {CAREER.map((item, i) => (
+            <div key={item.id} className="cr-row">
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ type: "spring", stiffness: 220, damping: 14 }}
+                className="cr-dot"
+                style={{ borderColor: item.color, boxShadow: `0 0 12px ${item.glowColor}` }}
+              >
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: item.color }} />
+              </motion.div>
+              <motion.span
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className="cr-year-tag"
+                style={{ color: item.color }}
+              >
+                {item.year}
+              </motion.span>
+              <CareerCard item={item} index={i} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* DESKTOP */}
+      <div className="cr-desktop">
+        <div className="cr-desktop-spine" aria-hidden="true">
+          <svg viewBox="0 0 160 1000" preserveAspectRatio="xMidYMid meet"
+            style={{ width: "100%", height: "100%", display: "block" }}>
+            <defs>
+              <linearGradient id="dg" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%"   stopColor="#5562ff" stopOpacity="0.9"/>
+                <stop offset="25%"  stopColor="#a855f7" stopOpacity="0.9"/>
+                <stop offset="50%"  stopColor="#06b6d4" stopOpacity="0.9"/>
+                <stop offset="75%"  stopColor="#f59e0b" stopOpacity="0.9"/>
+                <stop offset="100%" stopColor="#ec4899" stopOpacity="1"/>
+              </linearGradient>
+              <filter id="glowD">
+                <feGaussianBlur stdDeviation="4" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <mask id="dm">
+                <motion.path d={dPath} stroke="white" strokeWidth="4" fill="none"
+                  strokeLinecap="round" pathLength="1"
+                  style={{ pathLength: pathProgress }}/>
+              </mask>
+            </defs>
+            <path d={dPath} stroke="rgba(255,255,255,0.04)" strokeWidth="36" fill="none" strokeLinecap="round"/>
+            <path d={dPath} stroke="rgba(255,255,255,0.09)" strokeWidth="16" fill="none" strokeLinecap="round"/>
+            <path d={dPath} stroke="url(#dg)" strokeWidth="4" fill="none"
+              strokeLinecap="round" filter="url(#glowD)" mask="url(#dm)"/>
+            <path d={dPath} stroke="rgba(255,255,255,0.10)" strokeWidth="1.5"
+              strokeDasharray="12 20" fill="none" strokeLinecap="round"/>
+            {CAREER.map((item, i) => (
+              <circle key={item.id} cx="80" cy={dDots[i]} r="7.5"
+                fill={item.color} filter="url(#glowD)"/>
+            ))}
+          </svg>
+        </div>
+
+        {CAREER.map((item, i) => {
+          const isLeft = i % 2 === 0;
+          return (
+            <div key={item.id} className="cr-desktop-row">
+              <div className="cr-slot">
+                {isLeft ? (
+                  <CareerCard item={item} index={i} />
+                ) : (
+                  <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-80px" }} className="cr-meta cr-meta--right">
+                    <span style={{ color: item.color }} className="cr-meta__year">{item.year}</span>
+                    <p className="cr-meta__label">{item.label}</p>
+                  </motion.div>
+                )}
+              </div>
+              <div className="cr-spine-gap" />
+              <div className="cr-slot">
+                {!isLeft ? (
+                  <CareerCard item={item} index={i} />
+                ) : (
+                  <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-80px" }} className="cr-meta">
+                    <span style={{ color: item.color }} className="cr-meta__year">{item.year}</span>
+                    <p className="cr-meta__label">{item.label}</p>
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }} className="career-quote">
+        <div className="career-quote__star">✦</div>
+        <p className="career-quote__text">
+          "Perjalanan ini bukan tentang menjadi yang terbaik,{" "}
+          tapi tentang menjadi lebih baik dari hari kemarin."
+        </p>
+      </motion.div>
+    </div>
   );
 }
 
@@ -219,16 +441,16 @@ export default function App() {
       <div className="noise-overlay" />
       <CustomCursor scale={cursorScale} text={cursorText} />
       
-      {/* Dynamic Progress Indicator */}
-      <div className="fixed right-12 top-1/2 -translate-y-1/2 z-[100] h-32 flex flex-col items-center justify-between pointer-events-none">
-        <span className="text-[8px] uppercase tracking-widest text-white/20">01</span>
-        <div className="w-px flex-1 bg-white/10 mx-auto my-4 relative overflow-hidden">
+      {/* Dynamic Progress Indicator - Adjusted for less interference */}
+      <div className="fixed right-6 md:right-12 top-1/2 -translate-y-1/2 z-[50] h-32 flex flex-col items-center justify-between pointer-events-none opacity-40">
+        <span className="text-[8px] uppercase tracking-widest text-white">01</span>
+        <div className="w-px flex-1 bg-white/20 mx-auto my-4 relative overflow-hidden">
           <motion.div 
             className="absolute top-0 left-0 w-full bg-white origin-top"
             style={{ height: "100%", scaleY: horizontalScrollProgress }}
           />
         </div>
-        <span className="text-[8px] uppercase tracking-widest text-white/20">04</span>
+        <span className="text-[8px] uppercase tracking-widest text-white">04</span>
       </div>
       <header className="fixed top-0 left-0 w-full z-[100] px-8 md:px-12 py-10 flex justify-between items-center mix-blend-difference">
         <motion.div 
@@ -462,36 +684,29 @@ export default function App() {
            </div>
         </section>
 
-        {/* Career Lifecycle */}
-        <section id="journey" className="section-container border-t border-white/5 py-32 md:py-60">
-           <div className="mb-32">
-              <span className="text-[10px] font-bold tracking-[0.4em] text-white/30 uppercase mb-8 block font-bold">The Lifecycle</span>
-              <h2 className="text-4xl md:text-7xl font-light uppercase tracking-tighter">Professional <br /> Journey_</h2>
-           </div>
-           
-           <div className="space-y-4">
-              {CAREER.map((item, i) => (
-                <TimelineItem key={i} item={item} index={i} />
-              ))}
-           </div>
-           
-           <div className="mt-32 p-12 bg-white/5 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-12 border border-white/10">
-              <div className="text-center md:text-left">
-                 <p className="text-4xl font-light uppercase tracking-tighter mb-2">Academic Core_</p>
-                 <p className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-bold">B.Sc. In Computer Science & Engineering</p>
-              </div>
-              <div className="flex items-center gap-8">
-                 <div className="text-right">
-                    <p className="text-[10px] uppercase text-white/30 tracking-widest mb-1">Status</p>
-                    <p className="font-bold text-xs">Cum Laude</p>
-                 </div>
-                 <div className="w-px h-12 bg-white/10" />
-                 <div className="text-right">
-                    <p className="text-[10px] uppercase text-white/30 tracking-widest mb-1">Alumni</p>
-                    <p className="font-bold text-xs">Stanford University</p>
-                 </div>
-              </div>
-           </div>
+        {/* Career Lifecycle - Winding Road */}
+        <section id="journey" className="border-t border-white/5 overflow-hidden pt-20 md:pt-40">
+          {/* Header */}
+          <div className="section-container pb-0 pt-0">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-10"
+            >
+              <span className="text-[10px] font-bold tracking-[0.4em] uppercase block mb-6" style={{ color: '#5562ff' }}>Perjalanan Karir</span>
+              <h2 className="text-5xl md:text-8xl font-light uppercase tracking-tighter leading-tight">
+                Perjalanan <br />
+                <span className="heading-serif opacity-40 italic">Karir</span> Saya
+              </h2>
+              <p className="text-white/40 text-sm mt-8 max-w-sm leading-relaxed">
+                Setiap langkah membentuk saya hari ini. <br />Terus belajar, bertumbuh, dan memberikan dampak.
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Winding Road Component */}
+          <WindingRoadCareer />
         </section>
 
         {/* About Section - Expert Asymmetry */}
