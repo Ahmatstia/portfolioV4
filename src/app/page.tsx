@@ -8,7 +8,7 @@ import {
   AnimatePresence,
   useMotionValue,
   useInView
-} from "motion/react";
+} from "framer-motion";
 import { 
   ArrowUpRight, 
   Plus,
