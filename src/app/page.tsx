@@ -1,3 +1,5 @@
+"use client";
+
 import { 
   motion, 
   useScroll, 
@@ -9,9 +11,6 @@ import {
 } from "motion/react";
 import { 
   ArrowUpRight, 
-  Github, 
-  Linkedin, 
-  Instagram,
   Plus,
   ArrowRight,
   Menu,
@@ -30,6 +29,18 @@ import {
   Target
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
+
+const Github = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+);
+
+const Linkedin = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9" rx="2"/><circle cx="4" cy="4" r="2"/></svg>
+);
+
+const Instagram = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+);
 
 const PROJECTS = [
   {
@@ -263,152 +274,158 @@ function CareerCard({ item, index }: { item: any; index: number }) {
 }
 
 function WindingRoadCareer() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const spineRef = useRef<HTMLDivElement>(null);
+  
+  // Directly map scroll without useSpring to eliminate the lagging effect ("tertinggal")
+  // Using start 60% and end 40% ensures it draws in rhythm with what's visible
   const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start 0.9", "end 0.1"],
+    target: spineRef,
+    offset: ["start 60%", "end 40%"],
   });
-  const pathProgress = useSpring(scrollYProgress, { stiffness: 45, damping: 16 });
 
-  const mPath = `M 40 20 C 68 130, 12 230, 40 340 C 68 450, 12 550, 40 660 C 68 770, 12 870, 40 960 C 64 995, 20 1000, 40 1000`;
-  const dPath = `M 80 20 C 136 140, 24 260, 80 380 C 136 500, 24 620, 80 740 C 136 850, 30 940, 80 980`;
-  const mDots = [20, 255, 490, 725, 980];
-  const dDots = [20, 260, 500, 740, 975];
+  // A responsive path scaled precisely from Y=10 to Y=90.
+  // With 5 equal-height flex rows, their centers are exactly at 10%, 30%, 50%, 70%, 90%
+  const pathData = `M 50 10 C 90 15, 90 25, 50 30 C 10 35, 10 45, 50 50 C 90 55, 90 65, 50 70 C 10 75, 10 85, 50 90`;
 
   return (
-    <div ref={containerRef} className="career-road">
+    <div className="career-road">
       <div className="career-road__bg" />
 
-      {/* MOBILE */}
-      <div className="cr-mobile">
-        <div className="cr-spine-col" aria-hidden="true">
-          <svg viewBox="0 0 80 1000" preserveAspectRatio="xMidYMid meet"
-            style={{ width: "100%", height: "100%", display: "block" }}>
-            <defs>
-              <linearGradient id="mg" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%"   stopColor="#5562ff" stopOpacity="0.85"/>
-                <stop offset="25%"  stopColor="#a855f7" stopOpacity="0.85"/>
-                <stop offset="50%"  stopColor="#06b6d4" stopOpacity="0.85"/>
-                <stop offset="75%"  stopColor="#f59e0b" stopOpacity="0.85"/>
-                <stop offset="100%" stopColor="#ec4899" stopOpacity="0.95"/>
-              </linearGradient>
-              <filter id="glowM">
-                <feGaussianBlur stdDeviation="2.5" result="b"/>
-                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-              <mask id="mm">
-                <motion.path d={mPath} stroke="white" strokeWidth="3" fill="none"
-                  strokeLinecap="round" pathLength="1"
-                  style={{ pathLength: pathProgress }}/>
-              </mask>
-            </defs>
-            <path d={mPath} stroke="rgba(255,255,255,0.05)" strokeWidth="22" fill="none" strokeLinecap="round"/>
-            <path d={mPath} stroke="rgba(255,255,255,0.09)" strokeWidth="10" fill="none" strokeLinecap="round"/>
-            <path d={mPath} stroke="url(#mg)" strokeWidth="3" fill="none"
-              strokeLinecap="round" filter="url(#glowM)" mask="url(#mm)"/>
-            <path d={mPath} stroke="rgba(255,255,255,0.10)" strokeWidth="1"
-              strokeDasharray="7 13" fill="none" strokeLinecap="round"/>
+      <div ref={spineRef} className="relative z-10 w-full h-full flex flex-col">
+        {/* MOBILE */}
+        <div className="cr-mobile">
+          <div className="cr-spine-col relative">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute left-0 top-0 w-full h-full">
+              <defs>
+                <linearGradient id="mg" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%"   stopColor="#5562ff" stopOpacity="0.85"/>
+                  <stop offset="25%"  stopColor="#a855f7" stopOpacity="0.85"/>
+                  <stop offset="50%"  stopColor="#06b6d4" stopOpacity="0.85"/>
+                  <stop offset="75%"  stopColor="#f59e0b" stopOpacity="0.85"/>
+                  <stop offset="100%" stopColor="#ec4899" stopOpacity="0.95"/>
+                </linearGradient>
+                <filter id="glowM">
+                  <feGaussianBlur stdDeviation="2" result="b"/>
+                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <mask id="mm">
+                  <motion.path d={pathData} stroke="white" strokeWidth="6" fill="none"
+                    strokeLinecap="round" vectorEffect="non-scaling-stroke"
+                    style={{ pathLength: scrollYProgress }}/>
+                </mask>
+              </defs>
+              <path d={pathData} stroke="rgba(255,255,255,0.05)" strokeWidth="16" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke"/>
+              <path d={pathData} stroke="rgba(255,255,255,0.09)" strokeWidth="8" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke"/>
+              <path d={pathData} stroke="url(#mg)" strokeWidth="4" fill="none"
+                strokeLinecap="round" vectorEffect="non-scaling-stroke" filter="url(#glowM)" mask="url(#mm)"/>
+              <path d={pathData} stroke="rgba(255,255,255,0.15)" strokeWidth="2"
+                strokeDasharray="6 8" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke"/>
+            </svg>
+          </div>
+
+          <div className="cr-cards-col">
             {CAREER.map((item, i) => (
-              <circle key={item.id} cx="40" cy={mDots[i]} r="5.5"
-                fill={item.color} filter="url(#glowM)"/>
-            ))}
-          </svg>
-        </div>
-
-        <div className="cr-cards-col">
-          {CAREER.map((item, i) => (
-            <div key={item.id} className="cr-row">
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ type: "spring", stiffness: 220, damping: 14 }}
-                className="cr-dot"
-                style={{ borderColor: item.color, boxShadow: `0 0 12px ${item.glowColor}` }}
-              >
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: item.color }} />
-              </motion.div>
-              <motion.span
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="cr-year-tag"
-                style={{ color: item.color }}
-              >
-                {item.year}
-              </motion.span>
-              <CareerCard item={item} index={i} />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* DESKTOP */}
-      <div className="cr-desktop">
-        <div className="cr-desktop-spine" aria-hidden="true">
-          <svg viewBox="0 0 160 1000" preserveAspectRatio="xMidYMid meet"
-            style={{ width: "100%", height: "100%", display: "block" }}>
-            <defs>
-              <linearGradient id="dg" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%"   stopColor="#5562ff" stopOpacity="0.9"/>
-                <stop offset="25%"  stopColor="#a855f7" stopOpacity="0.9"/>
-                <stop offset="50%"  stopColor="#06b6d4" stopOpacity="0.9"/>
-                <stop offset="75%"  stopColor="#f59e0b" stopOpacity="0.9"/>
-                <stop offset="100%" stopColor="#ec4899" stopOpacity="1"/>
-              </linearGradient>
-              <filter id="glowD">
-                <feGaussianBlur stdDeviation="4" result="b"/>
-                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-              <mask id="dm">
-                <motion.path d={dPath} stroke="white" strokeWidth="4" fill="none"
-                  strokeLinecap="round" pathLength="1"
-                  style={{ pathLength: pathProgress }}/>
-              </mask>
-            </defs>
-            <path d={dPath} stroke="rgba(255,255,255,0.04)" strokeWidth="36" fill="none" strokeLinecap="round"/>
-            <path d={dPath} stroke="rgba(255,255,255,0.09)" strokeWidth="16" fill="none" strokeLinecap="round"/>
-            <path d={dPath} stroke="url(#dg)" strokeWidth="4" fill="none"
-              strokeLinecap="round" filter="url(#glowD)" mask="url(#dm)"/>
-            <path d={dPath} stroke="rgba(255,255,255,0.10)" strokeWidth="1.5"
-              strokeDasharray="12 20" fill="none" strokeLinecap="round"/>
-            {CAREER.map((item, i) => (
-              <circle key={item.id} cx="80" cy={dDots[i]} r="7.5"
-                fill={item.color} filter="url(#glowD)"/>
-            ))}
-          </svg>
-        </div>
-
-        {CAREER.map((item, i) => {
-          const isLeft = i % 2 === 0;
-          return (
-            <div key={item.id} className="cr-desktop-row">
-              <div className="cr-slot">
-                {isLeft ? (
-                  <CareerCard item={item} index={i} />
-                ) : (
-                  <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-80px" }} className="cr-meta cr-meta--right">
-                    <span style={{ color: item.color }} className="cr-meta__year">{item.year}</span>
-                    <p className="cr-meta__label">{item.label}</p>
-                  </motion.div>
-                )}
+              <div key={item.id} className="cr-row">
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ type: "spring", stiffness: 220, damping: 14 }}
+                  className="cr-dot"
+                  style={{ borderColor: item.color, boxShadow: `0 0 12px ${item.glowColor}` }}
+                >
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: item.color }} />
+                </motion.div>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  className="cr-year-tag"
+                  style={{ color: item.color }}
+                >
+                  {item.year}
+                </motion.span>
+                <CareerCard item={item} index={i} />
               </div>
-              <div className="cr-spine-gap" />
-              <div className="cr-slot">
-                {!isLeft ? (
-                  <CareerCard item={item} index={i} />
-                ) : (
-                  <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-80px" }} className="cr-meta">
-                    <span style={{ color: item.color }} className="cr-meta__year">{item.year}</span>
-                    <p className="cr-meta__label">{item.label}</p>
+            ))}
+          </div>
+        </div>
+
+        {/* DESKTOP */}
+        <div className="cr-desktop">
+          <div className="cr-desktop-spine" aria-hidden="true">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
+              <defs>
+                <linearGradient id="dg" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%"   stopColor="#5562ff" stopOpacity="0.9"/>
+                  <stop offset="25%"  stopColor="#a855f7" stopOpacity="0.9"/>
+                  <stop offset="50%"  stopColor="#06b6d4" stopOpacity="0.9"/>
+                  <stop offset="75%"  stopColor="#f59e0b" stopOpacity="0.9"/>
+                  <stop offset="100%" stopColor="#ec4899" stopOpacity="1"/>
+                </linearGradient>
+                <filter id="glowD">
+                  <feGaussianBlur stdDeviation="2.5" result="b"/>
+                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <mask id="dm">
+                  <motion.path d={pathData} stroke="white" strokeWidth="6" fill="none"
+                    strokeLinecap="round" vectorEffect="non-scaling-stroke"
+                    style={{ pathLength: scrollYProgress }}/>
+                </mask>
+              </defs>
+              <path d={pathData} stroke="rgba(255,255,255,0.04)" strokeWidth="24" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke"/>
+              <path d={pathData} stroke="rgba(255,255,255,0.09)" strokeWidth="12" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke"/>
+              <path d={pathData} stroke="url(#dg)" strokeWidth="6" fill="none"
+                strokeLinecap="round" vectorEffect="non-scaling-stroke" filter="url(#glowD)" mask="url(#dm)"/>
+              <path d={pathData} stroke="rgba(255,255,255,0.15)" strokeWidth="2"
+                strokeDasharray="8 12" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke"/>
+            </svg>
+          </div>
+
+          {CAREER.map((item, i) => {
+            const isLeft = i % 2 === 0;
+            return (
+              <div key={item.id} className="cr-desktop-row">
+                <div className="cr-slot">
+                  {isLeft ? (
+                    <CareerCard item={item} index={i} />
+                  ) : (
+                    <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-80px" }} className="cr-meta cr-meta--right">
+                      <span style={{ color: item.color }} className="cr-meta__year">{item.year}</span>
+                      <p className="cr-meta__label">{item.label}</p>
+                    </motion.div>
+                  )}
+                </div>
+                
+                <div className="cr-spine-gap">
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true, margin: "-40px" }}
+                    transition={{ type: "spring", stiffness: 220, damping: 14 }}
+                    className="cr-dot-desktop"
+                    style={{ borderColor: item.color, boxShadow: `0 0 12px ${item.glowColor}` }}
+                  >
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: item.color }} />
                   </motion.div>
-                )}
+                </div>
+                
+                <div className="cr-slot">
+                  {!isLeft ? (
+                    <CareerCard item={item} index={i} />
+                  ) : (
+                    <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-80px" }} className="cr-meta">
+                      <span style={{ color: item.color }} className="cr-meta__year">{item.year}</span>
+                      <p className="cr-meta__label">{item.label}</p>
+                    </motion.div>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
@@ -792,7 +809,7 @@ export default function App() {
               </div>
               <div className="space-y-4">
                  <p>Local Time</p>
-                 <p className="text-white">{(new Date()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC</p>
+                 <p className="text-white" suppressHydrationWarning>{(new Date()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC</p>
               </div>
            </div>
         </section>
